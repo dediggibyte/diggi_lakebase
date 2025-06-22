@@ -1,7 +1,6 @@
 
 # diggi_lakebase 🦾📊
-
-> End-to-end scripts and SQL to **benchmark Databricks Lakebase** against managed PostgreSQL for OLTP + real-time analytics workloads.
+End-to-end scripts and SQL to **benchmark Databricks Lakebase** against managed PostgreSQL for OLTP + real-time analytics workloads.
 
 ---
 
