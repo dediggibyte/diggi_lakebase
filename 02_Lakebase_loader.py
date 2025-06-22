@@ -4,7 +4,7 @@
 
 # COMMAND ----------
 
-# MAGIC %run ./00_Utility
+# MAGIC %run ./01_Utility
 
 # COMMAND ----------
 
@@ -69,6 +69,19 @@ person_df = person_data_spec.build()
 dff = person_df.join(df2_index, on=person_df['id'] == df2_index['id'], how="inner").drop("id")
 print(dff.count())
 
+# Write data in 4M records lakebase
+table = "sc_lakebase_demo.vehicle_ins_idx_big"
+url = f"jdbc:postgresql://{database_host}:{database_port}/{database_name}"
+print(url)
+(dff.write.format("jdbc")
+     .option("driver", driver)
+     .option("url", url)
+     .option("dbtable", table)
+     .option("user", user)
+     .option("password", password)
+     .mode("append")
+.save())
+
 # COMMAND ----------
 
 from pyspark.sql.types import *
@@ -93,6 +106,7 @@ def sample_orders():
 
 df = sample_orders()
 
+# Write sample data table in lakebase
 table = "sc_lakebase_demo.customer_orders"
 url = f"jdbc:postgresql://{database_host}:{database_port}/{database_name}"
 print(url)
