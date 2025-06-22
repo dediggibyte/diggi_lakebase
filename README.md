@@ -1,17 +1,4 @@
-# diggi_lakebase
-This repository is for exploratory purpose on Databricks Lakebase
 
-| **Codespaces** | Press the green **Code ▾** button → **Codespaces** → **Create codespace**. You’ll get a VS Code session in the cloud with Git already configured. | Nice balance of full IDE and zero local installs. |
-
-Once your pull request is merged, the repository’s **default branch** (likely `main`) will show the new README immediately. :contentReference[oaicite:0]{index=0}
-
----
-
-## 2 — **Recommended README content (drop-in template)**
-
-Paste the snippet below into `README.md` (replace the ▢ placeholders). Feel free to reorder or trim sections that aren’t relevant.
-
-```markdown
 # diggi_lakebase 🦾📊
 
 > End-to-end scripts and SQL to **benchmark Databricks Lakebase** against managed PostgreSQL for OLTP + real-time analytics workloads.
@@ -34,4 +21,3 @@ Paste the snippet below into `README.md` (replace the ▢ placeholders). Feel fr
 * **Databricks Workspace** with ✨ Lakebase preview enabled.  
 * **Unity Catalog** enabled.  
 * Python `3.10+` (locally)  
-
