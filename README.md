@@ -1,6 +1,6 @@
 
-# diggi_lakebase <img width="164" alt="image" src="https://github.com/user-attachments/assets/dee324eb-9439-4b08-851e-08541d1505a4" />
-📊
+# diggi_lakebase 
+# <img width="164" alt="image" src="https://github.com/user-attachments/assets/dee324eb-9439-4b08-851e-08541d1505a4" />📊
 End-to-end scripts and SQL to **benchmark Databricks Lakebase** against managed PostgreSQL for OLTP + real-time analytics workloads.
 
 ---
