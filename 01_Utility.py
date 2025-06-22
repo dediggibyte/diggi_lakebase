@@ -1,10 +1,11 @@
 # Databricks notebook source
-password = "" #Use your OAuth Token from respective OLTP-Database instance
+# Replace all the placeholder variables below with actual values
+password = ""                                                         #Use your OAuth Token from respective OLTP-Database instance
 driver = "org.postgresql.Driver"
-user = "example@databricks.com" #User having access to database instance
-database_host = "instance-3d8076e6-3884-4c74-b7ef-3fd539504f6c.database.azuredatabricks.net" #Your databricks host instance name
+user = "example@databricks.com"                                       # User having access to database instance
+database_host = "instance-123456.database.azuredatabricks.net"        # Your databricks host instance name
 database_port = "5432"
-database_name = "databricks_postgres" #Name of your database
+database_name = "database_name"                                       # Name of your database
 
 # COMMAND ----------
 
