@@ -1,0 +1,814 @@
+{
+  "datasets": [
+    {
+      "name": "ds_daily_accum",
+      "displayName": "Lakebase Daily Cost (Views)",
+      "queryLines": [
+        "SELECT workspace_name, usage_date, TRUNC(usage_date, 'MONTH') AS month, usage_unit, currency_code, database_instance_id, user, cost, accum_cost FROM databricks_lakebase.lakebase_cost.cost_lakebase_daily_accum where usage_date between '2025-06-15' and '2025-07-04'"
+      ],
+      "catalog": "databricks_lakebase",
+      "schema": "lakebase_cost"
+    },
+    {
+      "name": "ds_monthly_ws",
+      "displayName": "Lakebase Monthly by Workspace",
+      "queryLines": [
+        "SELECT month, workspace_name, usage_unit, currency_code, monthly_cost, month_end_accum_cost FROM databricks_lakebase.lakebase_cost.cost_lakebase_by_workspace_monthly"
+      ],
+      "catalog": "databricks_lakebase",
+      "schema": "lakebase_cost"
+    },
+    {
+      "name": "ds_usage_detail",
+      "displayName": "Lakebase Usage Detail (User/Instance)",
+      "queryLines": [
+        "SELECT CAST(usage_date AS DATE) AS usage_date, sku_name, usage_unit, database_instance_id, user, workspace_id, compute_qty FROM databricks_lakebase.lakebase_cost.usage_daily_user_instance"
+      ],
+      "catalog": "databricks_lakebase",
+      "schema": "lakebase_cost"
+    },
+    {
+      "name": "ds_rates",
+      "displayName": "Lakebase Effective Rates",
+      "queryLines": [
+        "SELECT sku_name, usage_unit, currency_code, price_start_time, COALESCE(price_end_time, TIMESTAMP '2999-12-31') AS price_end_time, effective_rate FROM databricks_lakebase.lakebase_cost.effective_rates"
+      ],
+      "catalog": "databricks_lakebase",
+      "schema": "lakebase_cost"
+    },
+    {
+      "name": "ds_cost_ma7",
+      "displayName": "Daily Cost vs 7D Moving Avg",
+      "queryLines": [
+        "WITH d AS (SELECT usage_date, usage_unit, SUM(cost) AS daily_cost FROM databricks_lakebase.lakebase_cost.cost_lakebase_daily_accum GROUP BY usage_date, usage_unit) SELECT  d.usage_date,  d.usage_unit,  d.daily_cost,  AVG(d.daily_cost) OVER (PARTITION BY d.usage_unit ORDER BY d.usage_date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS ma7 FROM d"
+      ],
+      "catalog": "databricks_lakebase",
+      "schema": "lakebase_cost"
+    }
+  ],
+  "pages": [
+    {
+      "name": "page_overview",
+      "displayName": "Overview",
+      "layout": [
+        {
+          "widget": {
+            "name": "9f1e98d7",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_daily_accum",
+                  "fields": [
+                    {
+                      "name": "workspace_name",
+                      "expression": "`workspace_name`"
+                    },
+                    {
+                      "name": "workspace_name_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "workspace_name",
+                    "displayName": "workspace_name",
+                    "queryName": "main_query"
+                  }
+                ]
+              },
+              "frame": {
+                "title": "Workspace",
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 4,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "502b36f1",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_daily_accum",
+                  "fields": [
+                    {
+                      "name": "usage_unit",
+                      "expression": "`usage_unit`"
+                    },
+                    {
+                      "name": "usage_unit_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "usage_unit",
+                    "displayName": "usage_unit",
+                    "queryName": "main_query"
+                  }
+                ]
+              },
+              "frame": {
+                "title": "Cost Unit",
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 5,
+            "width": 2,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "91f1704e",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_daily_accum",
+                  "fields": [
+                    {
+                      "name": "user",
+                      "expression": "`user`"
+                    },
+                    {
+                      "name": "user_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "user",
+                    "displayName": "user",
+                    "queryName": "main_query"
+                  }
+                ]
+              },
+              "frame": {
+                "title": "User",
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 5,
+            "width": 2,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "62531271",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_daily_accum",
+                  "fields": [
+                    {
+                      "name": "day",
+                      "expression": "DATE_TRUNC(\"DAY\", `usage_date`)"
+                    },
+                    {
+                      "name": "usage_unit",
+                      "expression": "`usage_unit`"
+                    },
+                    {
+                      "name": "sum_cost",
+                      "expression": "SUM(`cost`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "day",
+                  "scale": {
+                    "type": "temporal"
+                  },
+                  "displayName": "Date"
+                },
+                "y": {
+                  "fieldName": "sum_cost",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Total Cost"
+                },
+                "color": {
+                  "fieldName": "usage_unit",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "Unit"
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "frame": {
+                "title": "Daily Cost by Unit",
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 6,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "fbde5498",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_daily_accum",
+                  "fields": [
+                    {
+                      "name": "daily(usage_date)",
+                      "expression": "DATE_TRUNC(\"DAY\", `usage_date`)"
+                    },
+                    {
+                      "name": "sum(accum_cost)",
+                      "expression": "SUM(`accum_cost`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "daily(usage_date)",
+                  "scale": {
+                    "type": "temporal"
+                  },
+                  "displayName": "Date"
+                },
+                "y": {
+                  "fieldName": "sum(accum_cost)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Cumulative Cost"
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "frame": {
+                "title": "Cumulative Cost (All Units)",
+                "showTitle": true
+              },
+              "annotations": [
+                {
+                  "type": "vertical-line",
+                  "encodings": {
+                    "x": {
+                      "dataValue": "2025-07-01T00:00:00.000",
+                      "dataType": "DATETIME"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 12,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "8b9414aa",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_monthly_ws",
+                  "fields": [
+                    {
+                      "name": "workspace_name",
+                      "expression": "`workspace_name`"
+                    },
+                    {
+                      "name": "monthly(month)",
+                      "expression": "DATE_TRUNC(\"MONTH\", `month`)"
+                    },
+                    {
+                      "name": "sum(monthly_cost)",
+                      "expression": "SUM(`monthly_cost`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "monthly(month)",
+                  "scale": {
+                    "type": "temporal"
+                  },
+                  "displayName": "Month"
+                },
+                "y": {
+                  "fieldName": "sum(monthly_cost)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Monthly Cost"
+                },
+                "color": {
+                  "fieldName": "workspace_name",
+                  "scale": {
+                    "type": "categorical",
+                    "mappings": [
+                      {
+                        "value": "TEST_DEV_WS_01",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 3
+                        }
+                      }
+                    ]
+                  },
+                  "displayName": "Workspace"
+                }
+              },
+              "frame": {
+                "title": "Monthly Cost by Workspace",
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 12,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "1610d6a2",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_daily_accum",
+                  "fields": [
+                    {
+                      "name": "database_instance_id",
+                      "expression": "`database_instance_id`"
+                    },
+                    {
+                      "name": "sum_cost",
+                      "expression": "SUM(`cost`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "sum_cost",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Cost"
+                },
+                "color": {
+                  "fieldName": "database_instance_id",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "DB Instance"
+                }
+              },
+              "frame": {
+                "title": "Cost Share by Database Instance",
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 6,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "19dca445",
+            "multilineTextboxSpec": {
+              "lines": [
+                "OLTP Cost calculated on Daily basis \n",
+                "\n",
+                "- **Total Compute Cost** =Number of DBUs used X DBU Rate  \n",
+                "- **Total Storage Cost** = Number of DSUs used×Storage Rate per GB-month  \n",
+                "- **Total Usage Cost (Lakebase)** =Total Compute Cost+Total Storage Cost  \n",
+                "\n",
+                "Where:\n",
+                "- **DBU** (Databricks Unit): Represents the processing power consumed per hour.\n",
+                "- **DSU** (Data Storage Unit): Represents storage consumption, usually measured per GB-month.\n",
+                "- Rates are determined by your service contract or selected Databricks pricing tier."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "d1efc1ec",
+            "queries": [
+              {
+                "name": "dashboards/01f0763472c317869c9e32e776d939c6/datasets/01f0763472c31efd827a909e131bd4b1_database_instance_id",
+                "query": {
+                  "datasetName": "ds_daily_accum",
+                  "fields": [
+                    {
+                      "name": "database_instance_id",
+                      "expression": "`database_instance_id`"
+                    },
+                    {
+                      "name": "database_instance_id_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "database_instance_id",
+                    "displayName": "database_instance_id",
+                    "queryName": "dashboards/01f0763472c317869c9e32e776d939c6/datasets/01f0763472c31efd827a909e131bd4b1_database_instance_id"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Instances"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 5,
+            "width": 2,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "2c75eadc",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_daily_accum",
+                  "fields": [
+                    {
+                      "name": "usage_unit",
+                      "expression": "`usage_unit`"
+                    },
+                    {
+                      "name": "user",
+                      "expression": "`user`"
+                    },
+                    {
+                      "name": "sum(cost)",
+                      "expression": "SUM(`cost`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "user",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "user"
+                },
+                "y": {
+                  "fieldName": "sum(cost)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Sum of cost"
+                },
+                "color": {
+                  "fieldName": "usage_unit",
+                  "scale": {
+                    "type": "categorical",
+                    "mappings": [
+                      {
+                        "value": "DBU",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 1
+                        }
+                      }
+                    ]
+                  },
+                  "displayName": "usage_unit"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Cost by Users"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 18,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "7dcd210d",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_cost_ma7",
+                  "fields": [
+                    {
+                      "name": "usage_unit",
+                      "expression": "`usage_unit`"
+                    },
+                    {
+                      "name": "daily(usage_date)",
+                      "expression": "DATE_TRUNC(\"DAY\", `usage_date`)"
+                    },
+                    {
+                      "name": "sum(daily_cost)",
+                      "expression": "SUM(`daily_cost`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "daily(usage_date)",
+                  "scale": {
+                    "type": "temporal"
+                  },
+                  "displayName": "usage_date"
+                },
+                "y": {
+                  "fieldName": "sum(daily_cost)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Sum of daily_cost"
+                },
+                "color": {
+                  "fieldName": "usage_unit",
+                  "scale": {
+                    "type": "categorical",
+                    "mappings": [
+                      {
+                        "value": "DSU",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 4
+                        }
+                      },
+                      {
+                        "value": "DBU",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 2
+                        }
+                      }
+                    ]
+                  },
+                  "displayName": "usage_unit"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Potential Spikes (> 1.25× MA7)"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 24,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "c687c984",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_cost_ma7",
+                  "fields": [
+                    {
+                      "name": "daily(usage_date)",
+                      "expression": "DATE_TRUNC(\"DAY\", `usage_date`)"
+                    },
+                    {
+                      "name": "daily_cost",
+                      "expression": "`daily_cost`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "daily(usage_date)",
+                  "scale": {
+                    "type": "temporal"
+                  },
+                  "displayName": "Date"
+                },
+                "y": {
+                  "fieldName": "daily_cost",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Cost"
+                }
+              },
+              "frame": {
+                "title": "Daily Cost vs 7-Day Moving Average",
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 30,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "41500de0",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_rates",
+                  "fields": [
+                    {
+                      "name": "sku_name",
+                      "expression": "`sku_name`"
+                    },
+                    {
+                      "name": "price_start_time",
+                      "expression": "`price_start_time`"
+                    },
+                    {
+                      "name": "effective_rate",
+                      "expression": "`effective_rate`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "price_start_time",
+                  "scale": {
+                    "type": "temporal"
+                  },
+                  "displayName": "Start"
+                },
+                "y": {
+                  "fieldName": "effective_rate",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Effective Rate"
+                },
+                "color": {
+                  "fieldName": "sku_name",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "SKU"
+                }
+              },
+              "frame": {
+                "title": "Effective Price over Time (per SKU)",
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 18,
+            "width": 3,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    }
+  }
+}

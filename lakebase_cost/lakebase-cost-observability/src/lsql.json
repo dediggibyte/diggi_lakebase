@@ -1,0 +1,12 @@
+{
+  "warehouse_id_env": "Your_warehouse_id",
+  "catalog": "Your_catalog",
+  "schema": "Your_schema",
+  "steps": [
+    {"name": "usage_daily_user_instance", "path": "sql/02_usage_daily_user_instance"},
+    {"name": "effective_rates",           "path": "sql/03_effective_rates"},
+    {"name": "workspaces",                "path": "sql/04_workspaces"},
+    {"name": "cost_daily_accum",          "path": "sql/05_cost_lakebase_daily_accum"},
+    {"name": "cost_workspace_monthly",    "path": "sql/06_cost_lakebase_by_workspace_monthly"}
+  ]
+}

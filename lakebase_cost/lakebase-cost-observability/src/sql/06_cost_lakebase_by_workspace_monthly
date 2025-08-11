@@ -1,0 +1,10 @@
+CREATE OR REPLACE VIEW databricks_lakebase.lakebase_cost.cost_lakebase_by_workspace_monthly AS
+SELECT
+  month,
+  workspace_name,
+  usage_unit,
+  currency_code,
+  SUM(cost)       AS monthly_cost,
+  MAX(accum_cost) AS month_end_accum_cost
+FROM databricks_lakebase.lakebase_cost.cost_lakebase_daily_accum
+GROUP BY ALL;

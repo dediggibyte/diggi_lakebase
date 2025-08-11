@@ -1,0 +1,32 @@
+CREATE OR REPLACE VIEW databricks_lakebase.lakebase_cost.cost_lakebase_daily_accum AS
+WITH comp_qty AS (
+  SELECT * FROM databricks_lakebase.lakebase_cost.usage_daily_user_instance
+),
+rate AS (
+  SELECT * FROM databricks_lakebase.lakebase_cost.effective_rates
+),
+workspace AS (
+  SELECT * FROM databricks_lakebase.lakebase_cost.workspaces
+)
+SELECT
+  w.workspace_name,
+  c.compute_qty * r.effective_rate AS cost,
+  c.usage_date,
+  TRUNC(c.usage_date, 'MONTH') AS month,
+  c.usage_unit,
+  r.currency_code,
+  c.database_instance_id,
+  c.user,
+  SUM(c.compute_qty * r.effective_rate) OVER (
+    PARTITION BY w.workspace_name, c.user, c.database_instance_id, r.currency_code, c.usage_unit, TRUNC(c.usage_date, 'MONTH')
+    ORDER BY c.usage_date
+    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+  ) AS accum_cost
+FROM comp_qty c
+JOIN rate r
+  ON  c.sku_name = r.sku_name
+  AND c.usage_unit = r.usage_unit
+  AND TIMESTAMP(c.usage_date) >= r.price_start_time
+  AND TIMESTAMP(c.usage_date) <  r.price_end_time
+JOIN workspace w
+  ON w.workspace_id = c.workspace_id;
