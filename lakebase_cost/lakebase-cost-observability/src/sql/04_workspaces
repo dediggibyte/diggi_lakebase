@@ -1,0 +1,3 @@
+CREATE OR REPLACE VIEW databricks_lakebase.lakebase_cost.workspaces AS
+SELECT DISTINCT workspace_id, workspace_name
+FROM system.access.workspaces_latest;

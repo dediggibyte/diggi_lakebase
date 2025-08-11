@@ -1,0 +1,18 @@
+CREATE OR REPLACE VIEW databricks_lakebase.lakebase_cost.effective_rates AS
+SELECT
+  CASE
+    WHEN sku_name = 'PREMIUM_DATABRICKS_STORAGE_US_EAST'
+      THEN pricing.effective_list['default'] * 10
+    ELSE pricing.effective_list['default']
+  END AS effective_rate,
+  usage_unit,
+  sku_name,
+  account_id,
+  currency_code,
+  price_start_time,
+  COALESCE(price_end_time, TIMESTAMP '2999-12-31 23:59:59Z') AS price_end_time
+FROM system.billing.list_prices
+WHERE sku_name IN (
+        'PREMIUM_DATABASE_SERVERLESS_COMPUTE_US_EAST',
+        'PREMIUM_DATABRICKS_STORAGE_US_EAST'
+      );

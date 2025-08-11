@@ -1,0 +1,2 @@
+USE CATALOG databricks_lakebase;
+CREATE SCHEMA IF NOT EXISTS lakebase_cost;

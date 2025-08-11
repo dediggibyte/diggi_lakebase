@@ -1,0 +1,63 @@
+# Databricks Asset Bundle configuration, more info here: https://docs.databricks.com/en/dev-tools/bundles/settings.html
+bundle:
+  name: "lakebase-cost-observability"
+
+variables:
+  warehouse_id:
+    description: SQL Warehouse for queries & dashboard
+    default: "--------" # TODO: Replace with your Warehouse ID
+  catalog:
+    default: catalog_name # TODO: Replace with your Catalog Name
+  schema:
+    default: schema_name # TODO: Replace with your Schema Name
+
+resources:
+  dashboards:
+    lakebase_cost:
+      display_name: "Lakebase Cost Overview"
+      file_path: dashboards/Lakebase Cost Overview.lvdash.json
+      warehouse_id: ${var.warehouse_id}
+
+  jobs:
+    materialize_lakebase_cost_views:
+      name: "Materialize Lakebase Cost Views"
+
+      parameters:
+        - name: DATABRICKS_WAREHOUSE_ID
+          default: ${var.warehouse_id}
+
+      job_clusters:
+        - job_cluster_key: lakebase_cost_dashboard_deployemnt
+          new_cluster:
+            spark_version: "16.3.x-scala2.12" # Preferably use version above 13.x
+            node_type_id: "Standard_DS3_v2" # Can be replaced accoriding to preferences in AWS or GCP vm(s)
+            num_workers: 1
+
+      tasks:
+        - task_key: run_lsql
+          job_cluster_key: lakebase_cost_dashboard_deployemnt
+          notebook_task:
+            notebook_path: ./src/run_lsql.ipynb
+            source: WORKSPACE
+            base_parameters:
+              [
+                "--DATABRICKS_WAREHOUSE_ID", 
+                "{{ job.parameters.DATABRICKS_WAREHOUSE_ID }}"
+              ]
+
+targets:
+  # The 'dev' target, for development purposes. This target is the default.
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: https://adb-1234567890123456.azuredatabricks.net # TODO: Replace with your Workspace URL
+
+  # The 'prod' target, used for production deployment.
+  prod:
+    mode: production
+    workspace:
+      host: https://adb-1234567890123456.azuredatabricks.net # TODO: Replace with your Workspace URL
+      root_path: /Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}
+    run_as:
+      user_name: ${workspace.current_user.userName}

@@ -1,0 +1,23 @@
+CREATE OR REPLACE VIEW databricks_lakebase.lakebase_cost.usage_daily_user_instance AS
+SELECT
+  SUM(usage_quantity) AS compute_qty,
+  CAST(usage_date AS DATE) AS usage_date,
+  sku_name,
+  usage_unit,
+  usage_metadata.database_instance_id AS database_instance_id,
+  COALESCE(identity_metadata.run_as,
+           identity_metadata.created_by,
+           identity_metadata.owned_by) AS user,
+  workspace_id
+FROM system.billing.usage
+WHERE sku_name IN (
+        'PREMIUM_DATABASE_SERVERLESS_COMPUTE_US_EAST',
+        'PREMIUM_DATABRICKS_STORAGE_US_EAST'
+      )
+GROUP BY
+  CAST(usage_date AS DATE),
+  sku_name,
+  usage_unit,
+  usage_metadata.database_instance_id,
+  COALESCE(identity_metadata.run_as, identity_metadata.created_by, identity_metadata.owned_by),
+  workspace_id;
